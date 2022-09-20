@@ -1,7 +1,24 @@
 import React from "react";
+import {
+  makeStyles,
+  tokens,
+  webLightTheme,
+  FluentProvider,
+} from "@fluentui/react-components";
+import { Nav } from "./common";
 
-function App() {
-  return <div>This is a test page</div>;
-}
+const useAppStyles = makeStyles({
+  app: {
+    backgroundColor: tokens.colorNeutralBackground1,
+  },
+});
 
-export default App;
+export const App = () => {
+  const styles = useAppStyles();
+
+  return (
+    <FluentProvider className={styles.app} theme={webLightTheme}>
+      <Nav />
+    </FluentProvider>
+  );
+};
