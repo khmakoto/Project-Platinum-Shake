@@ -8,11 +8,6 @@ export const usePhotoGridStyles = makeStyles({
     ...shorthands.gap("10px"),
     ...shorthands.padding("30px"),
   },
-  photo: {
-    backgroundColor: "red",
-    height: "50px",
-    width: "50px",
-  },
   daySection: {
     display: "flex",
     flexWrap: "wrap",
