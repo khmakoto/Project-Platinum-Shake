@@ -5,7 +5,8 @@ import {
   FluentProvider,
 } from "@fluentui/react-components";
 import { Route, Routes } from "react-router";
-import { ProtectedRoute } from "./auth";
+import { BrowserRouter as Router } from "react-router-dom";
+import { Auth0ProviderWithHistory, ProtectedRoute } from "./auth";
 import { LoginView, PhotosView } from "./views";
 
 const useAppStyles = makeStyles({
@@ -18,11 +19,15 @@ export const App = () => {
   const styles = useAppStyles();
 
   return (
-    <FluentProvider className={styles.app} theme={webLightTheme}>
-      <Routes>
-        <Route path="/" element={<LoginView />} />
-        <Route path="/photos" element={<ProtectedRoute component={PhotosView} />} />
-      </Routes>
-    </FluentProvider>
+    <Router>
+      <Auth0ProviderWithHistory>
+        <FluentProvider className={styles.app} theme={webLightTheme}>
+          <Routes>
+            <Route path="/" element={<LoginView />} />
+            <Route path="/photos" element={<ProtectedRoute component={PhotosView} />} />
+          </Routes>
+        </FluentProvider>
+      </Auth0ProviderWithHistory>
+    </Router>
   );
 };

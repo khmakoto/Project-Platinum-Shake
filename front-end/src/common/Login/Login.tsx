@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, ButtonProps } from "@fluentui/react-components";
+import { Button } from "@fluentui/react-components";
+import type { ButtonProps } from "@fluentui/react-components";
 
 export const LoginButton = (props: ButtonProps) => {
   const { loginWithRedirect } = useAuth0();
