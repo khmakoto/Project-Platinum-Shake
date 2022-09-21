@@ -5,7 +5,7 @@ import {
   webLightTheme,
   FluentProvider,
 } from "@fluentui/react-components";
-import { Nav, PhotoGrid } from "./common";
+import { Nav, PhotoGrid, SideNav } from "./common";
 import type { PhotoGridItem } from "./common";
 
 const useAppStyles = makeStyles({
@@ -35,6 +35,7 @@ export const App = () => {
   return (
     <FluentProvider className={styles.app} theme={webLightTheme}>
       <Nav />
+      <SideNav />
       <PhotoGrid photoItems={createPhotoArray(50)} />
     </FluentProvider>
   );
