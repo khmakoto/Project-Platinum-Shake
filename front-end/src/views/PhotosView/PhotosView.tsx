@@ -1,4 +1,4 @@
-import { Nav, PhotoGrid } from "../../common";
+import { Nav, PhotoGrid, SideNav } from "../../common";
 import type { PhotoGridItem } from "../../common";
 
 /* TODO: Remove this function and replace it with actual photo metadata when we retrieve the images */
@@ -20,6 +20,7 @@ export const PhotosView = () => {
   return (
     <div>
       <Nav />
+      <SideNav />
       <PhotoGrid photoItems={createPhotoArray(50)} />
     </div>
   );
