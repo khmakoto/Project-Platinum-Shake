@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@auth0/auth0-react": "^1.11.0",
     "@fluentui/react-components": "^9.3.0",
     "@fluentui/react-icons": "^2.0.182",
     "@types/jest": "^27.5.2",
