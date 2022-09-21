@@ -1,12 +1,13 @@
-import React from "react";
 import {
   makeStyles,
   tokens,
   webLightTheme,
   FluentProvider,
 } from "@fluentui/react-components";
-import { Nav, PhotoGrid, SideNav } from "./common";
-import type { PhotoGridItem } from "./common";
+import { Route, Routes } from "react-router";
+import { BrowserRouter as Router } from "react-router-dom";
+import { Auth0ProviderWithHistory, ProtectedRoute } from "./auth";
+import { LoginView, PhotosView } from "./views";
 
 const useAppStyles = makeStyles({
   app: {
@@ -14,29 +15,19 @@ const useAppStyles = makeStyles({
   },
 });
 
-/* TODO: Remove this function and replace it with actual photo metadata when we retrieve the images */
-function createPhotoArray(size: number): PhotoGridItem[] {
-  const result: PhotoGridItem[] = [];
-  for (let i = 0; i < size; i++) {
-    const num = Math.random() * 1700000000000;
-    for (let j = 0; j < Math.random() * 9 + 1; j++) {
-      result.push({
-        date: new Date(num),
-        src: "https://fabricweb.azureedge.net/fabric-website/placeholders/300x300.png",
-      });
-    }
-  }
-  return result;
-}
-
 export const App = () => {
   const styles = useAppStyles();
 
   return (
-    <FluentProvider className={styles.app} theme={webLightTheme}>
-      <Nav />
-      <SideNav />
-      <PhotoGrid photoItems={createPhotoArray(50)} />
-    </FluentProvider>
+    <Router>
+      <Auth0ProviderWithHistory>
+        <FluentProvider className={styles.app} theme={webLightTheme}>
+          <Routes>
+            <Route path="/" element={<LoginView />} />
+            <Route path="/photos" element={<ProtectedRoute component={PhotosView} />} />
+          </Routes>
+        </FluentProvider>
+      </Auth0ProviderWithHistory>
+    </Router>
   );
 };
