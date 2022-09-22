@@ -26,9 +26,16 @@ export const usePhotoGridStyles = makeStyles({
       minWidth: "200px",
     },
   },
+  photoContainer: {
+    flexGrow: 1,
+    maxHeight: "200px",
+    position: "relative",
+  },
   photo: {
     cursor: "pointer",
-    flexGrow: 1,
     height: "200px",
+    maxWidth: "100%",
+    minWidth: "100%",
+    objectFit: "cover",
   },
 });

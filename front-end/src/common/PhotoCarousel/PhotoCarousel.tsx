@@ -1,29 +1,53 @@
 import * as React from "react";
-import { Button, Image } from "@fluentui/react-components";
+import { mergeClasses, Button, Image } from "@fluentui/react-components";
 import { DismissRegular } from "@fluentui/react-icons";
 import { Portal } from "@fluentui/react-portal";
 import { usePhotoCarouselStyles } from "./usePhotoCarouselStyles";
 import type { PhotoCarouselProps } from "./PhotoCarousel.types";
 
 export const PhotoCarousel: React.FC<PhotoCarouselProps> = (props) => {
-  const styles = usePhotoCarouselStyles();
+  const { imageTarget, targetCoordinates, togglePhotoCarousel, visible } =
+    props;
 
-  const { src, togglePhotoCarousel } = props;
+  const hiddenPhotoRef = React.useRef<HTMLImageElement>(null);
+
+  const styles = usePhotoCarouselStyles();
 
   return (
     <Portal>
-      <div className={styles.backdrop}></div>
-      <div className={styles.photoContainer}>
-        <Image className={styles.photo} fit="contain" src={src} />
+      {visible && <div className={styles.backdrop}></div>}
+      <div
+        className={mergeClasses(
+          styles.animationWrapper,
+          visible && styles.unhideAnimationWrapper
+        )}
+        style={
+          {
+            "--left": targetCoordinates ? `${targetCoordinates?.x}px` : "50%",
+            "--top": targetCoordinates ? `${targetCoordinates?.y}px` : "50vh",
+          } as any
+        }
+      >
+        <Image
+          className={mergeClasses(
+            styles.photoToAnimate,
+            visible && styles.unhidePhotoToAnimate
+          )}
+          fit="contain"
+          ref={hiddenPhotoRef}
+          src={imageTarget?.src}
+        />
       </div>
-      <Button
-        appearance="transparent"
-        className={styles.closeButton}
-        icon={<DismissRegular />}
-        onClick={togglePhotoCarousel}
-        shape="circular"
-        size="large"
-      />
+      {visible && (
+        <Button
+          appearance="transparent"
+          className={styles.closeButton}
+          icon={<DismissRegular />}
+          onClick={togglePhotoCarousel}
+          shape="circular"
+          size="large"
+        />
+      )}
     </Portal>
   );
 };
