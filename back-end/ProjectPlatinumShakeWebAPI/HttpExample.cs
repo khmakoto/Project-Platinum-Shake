@@ -1,34 +1,46 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-
 namespace ProjectPlatinumShakeWebAPI
 {
-    public static class HttpExample
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Azure.WebJobs.Extensions.Http;
+    using Microsoft.Extensions.Logging;
+    using ProjectPlatinumShakeWebAPI.Auth;
+    using ProjectPlatinumShakeWebAPI.Common;
+
+    // TODO: This class and its methods will be renamed and repurposed for providing the actual API method we expect.
+    // The current content of this class is just for demo/test purposes.
+    public class HttpExample
     {
-        [FunctionName("HttpExample")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+        private Auth0Authenticator authenticator;
+
+        public HttpExample(Auth0Authenticator authenticator)
+        {
+            this.authenticator = authenticator;
+        }
+
+        [FunctionName("Auth")]
+        public async Task<HttpResponseMessage> Hello(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth")] HttpRequestMessage req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            try
+            {
+                var (user, token) = await authenticator.AuthenticateAsync(req);
+                log.LogInformation("User authenticated");
 
-            string name = req.Query["name"];
+                foreach (var claim in user.Claims)
+                    log.LogInformation($"Claim `{claim.Type}` is `{claim.Value}`");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+                var result = user.Claims.Select(c => new { type = c.Type, value = c.Value }).ToList();
+                return req.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (ExpectedException e)
+            {
+                return req.CreateErrorResponse(e.Code, e.Message);
+            }
         }
     }
 }
