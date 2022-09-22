@@ -7,9 +7,11 @@ function createPhotoArray(size: number): PhotoGridItem[] {
   for (let i = 0; i < size; i++) {
     const num = Math.random() * 1700000000000;
     for (let j = 0; j < Math.random() * 9 + 1; j++) {
+      const height = Math.ceil(Math.random() * 900) + 100;
+      const width = Math.ceil(Math.random() * 900) + 100;
       result.push({
         date: new Date(num),
-        src: "https://fabricweb.azureedge.net/fabric-website/placeholders/300x300.png",
+        src: `https://via.placeholder.com/${width}x${height}.png`,
       });
     }
   }
@@ -17,11 +19,13 @@ function createPhotoArray(size: number): PhotoGridItem[] {
 }
 
 export const PhotosView = () => {
+  const photos = createPhotoArray(50);
+
   return (
     <div>
       <Nav />
       <SideNav />
-      <PhotoGrid photoItems={createPhotoArray(50)} />
+      <PhotoGrid photoItems={photos} />
     </div>
   );
-}
+};

@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-<<<<<<< Updated upstream
     "@auth0/auth0-react": "^1.11.0",
-=======
     "@fluentui/keyboard-keys": "^9.0.0",
->>>>>>> Stashed changes
     "@fluentui/react-components": "^9.3.0",
     "@fluentui/react-icons": "^2.0.182",
     "@fluentui/react-portal": "^9.0.5",
