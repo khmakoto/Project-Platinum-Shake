@@ -24,7 +24,10 @@ export const App = () => {
         <FluentProvider className={styles.app} theme={webLightTheme}>
           <Routes>
             <Route path="/" element={<LoginView />} />
-            <Route path="/photos" element={<ProtectedRoute component={PhotosView} />} />
+            <Route
+              path="/photos"
+              element={<ProtectedRoute component={PhotosView} />}
+            />
           </Routes>
         </FluentProvider>
       </Auth0ProviderWithHistory>

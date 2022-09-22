@@ -11,7 +11,12 @@ export const SideNav: React.FC<{}> = () => {
 
   return (
     <div className={styles.root}>
-      <TabList appearance="subtle" defaultSelectedValue="photos" vertical>
+      <TabList
+        appearance="subtle"
+        defaultSelectedValue="photos"
+        onTabSelect={(ev, data) => alert(data.value)}
+        vertical
+      >
         <Tab
           className={styles.tab}
           content={{ className: styles.tabContent }}
