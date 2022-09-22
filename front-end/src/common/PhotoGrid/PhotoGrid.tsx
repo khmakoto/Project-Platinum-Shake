@@ -34,10 +34,8 @@ export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
 
   const onEscapePhotoCarousel = React.useCallback((ev: KeyboardEvent) => {
     if (ev.key === Escape) {
-      // setTimeout(() => {
       setShowPhotoCarousel(false);
       window.removeEventListener("keydown", onEscapePhotoCarousel);
-      // }, 200);
     }
   }, []);
 
