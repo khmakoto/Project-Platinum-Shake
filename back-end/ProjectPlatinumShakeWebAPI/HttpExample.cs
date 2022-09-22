@@ -22,7 +22,7 @@ namespace ProjectPlatinumShakeWebAPI
         }
 
         [FunctionName("Auth")]
-        public async Task<HttpResponseMessage> Hello(
+        public async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth")] HttpRequestMessage req,
             ILogger log)
         {
