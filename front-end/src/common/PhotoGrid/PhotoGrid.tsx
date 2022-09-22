@@ -32,20 +32,32 @@ export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
 
   const styles = usePhotoGridStyles();
 
-  const onEscapePhotoCarousel = React.useCallback((ev: KeyboardEvent) => {
-    if (ev.key === Escape) {
-      setShowPhotoCarousel(false);
-      window.removeEventListener("keydown", onEscapePhotoCarousel);
-    }
-  }, []);
+  const onEscapePhotoCarousel = React.useCallback(
+    (ev: KeyboardEvent) => {
+      if (ev.key === Escape) {
+        setShowPhotoCarousel(false);
+        window.removeEventListener("keydown", onEscapePhotoCarousel);
+
+        if (photoCarouselTargetElement) {
+          photoCarouselTargetElement.ownerDocument.body.style.overflow = "auto";
+        }
+      }
+    },
+    [photoCarouselTargetElement]
+  );
 
   const togglePhotoCarousel = React.useCallback(
     (ev?: React.MouseEvent<HTMLButtonElement | HTMLImageElement>) => {
       if (showPhotoCarousel) {
         setShowPhotoCarousel(false);
         window.removeEventListener("keydown", onEscapePhotoCarousel);
+
+        if (photoCarouselTargetElement) {
+          photoCarouselTargetElement.ownerDocument.body.style.overflow = "auto";
+        }
       } else if (ev) {
         const target = ev.target as HTMLImageElement;
+
         setPhotoCarouselTargetElement(target);
         setPhotoCarouselTargetMouseCoordinates({
           x: ev.clientX,
@@ -55,9 +67,11 @@ export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
           window.addEventListener("keydown", onEscapePhotoCarousel);
           setShowPhotoCarousel(true);
         }, 300);
+
+        target.ownerDocument.body.style.overflow = "hidden";
       }
     },
-    [onEscapePhotoCarousel, showPhotoCarousel]
+    [onEscapePhotoCarousel, photoCarouselTargetElement, showPhotoCarousel]
   );
 
   const photoItems = props.photoItems;
