@@ -3,7 +3,7 @@ import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 export const useNavStyles = makeStyles({
   root: {
     alignItems: "center",
-    backgroundColor: "inherit",
+    backgroundColor: tokens.colorNeutralBackground1,
     boxShadow: `0 0 8px ${tokens.colorBrandShadowAmbient}, 0 14px 28px ${tokens.colorNeutralStroke1}`,
     boxSizing: "border-box",
     display: "flex",
@@ -12,5 +12,6 @@ export const useNavStyles = makeStyles({
     ...shorthands.padding(0, "10px"),
     position: "sticky",
     top: 0,
+    zIndex: 1,
   },
 });

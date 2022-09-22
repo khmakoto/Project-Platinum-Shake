@@ -3,6 +3,7 @@ import { Escape } from "@fluentui/keyboard-keys";
 import { Image, Title3 } from "@fluentui/react-components";
 import { PhotoCarousel } from "../PhotoCarousel";
 import { usePhotoGridStyles } from "./usePhotoGridStyles";
+import type { PhotoCarouselCoordinates } from "../PhotoCarousel";
 import type { PhotoGridItem, PhotoGridProps } from "./PhotoGrid.types";
 
 const sortPhotos = (a: PhotoGridItem, b: PhotoGridItem): number => {
@@ -21,13 +22,22 @@ const localeDateOptions: Intl.DateTimeFormatOptions = {
 };
 
 export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
-  const [photoCarouselSrc, setPhotoCarouselSrc] = React.useState("");
+  const [photoCarouselTargetElement, setPhotoCarouselTargetElement] =
+    React.useState<HTMLImageElement | null>(null);
+  const [
+    photoCarouselTargetMouseCoordinates,
+    setPhotoCarouselTargetMouseCoordinates,
+  ] = React.useState<PhotoCarouselCoordinates>();
   const [showPhotoCarousel, setShowPhotoCarousel] = React.useState(false);
+
+  const styles = usePhotoGridStyles();
 
   const onEscapePhotoCarousel = React.useCallback((ev: KeyboardEvent) => {
     if (ev.key === Escape) {
+      // setTimeout(() => {
       setShowPhotoCarousel(false);
       window.removeEventListener("keydown", onEscapePhotoCarousel);
+      // }, 200);
     }
   }, []);
 
@@ -35,18 +45,22 @@ export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
     (ev?: React.MouseEvent<HTMLButtonElement | HTMLImageElement>) => {
       if (showPhotoCarousel) {
         setShowPhotoCarousel(false);
+        window.removeEventListener("keydown", onEscapePhotoCarousel);
       } else if (ev) {
-        setPhotoCarouselSrc((ev.target as HTMLImageElement).src);
+        const target = ev.target as HTMLImageElement;
+        setPhotoCarouselTargetElement(target);
+        setPhotoCarouselTargetMouseCoordinates({
+          x: ev.clientX,
+          y: ev.clientY,
+        });
         setTimeout(() => {
           window.addEventListener("keydown", onEscapePhotoCarousel);
           setShowPhotoCarousel(true);
-        }, 200);
+        }, 300);
       }
     },
     [onEscapePhotoCarousel, showPhotoCarousel]
   );
-
-  const styles = usePhotoGridStyles();
 
   const photoItems = props.photoItems;
   photoItems.sort(sortPhotos);
@@ -95,13 +109,18 @@ export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
       }
 
       currentSection.push(
-        <Image
-          className={styles.photo}
-          key={`photo${photoCount++}`}
-          onClick={togglePhotoCarousel}
-          shadow
-          src={photo.src}
-        />
+        <div
+          className={styles.photoContainer}
+          key={`photoContainer${photoCount}`}
+        >
+          <Image
+            className={styles.photo}
+            key={`photo${photoCount++}`}
+            onClick={togglePhotoCarousel}
+            shadow
+            src={photo.src}
+          />
+        </div>
       );
     }
 
@@ -111,17 +130,26 @@ export const PhotoGrid: React.FC<PhotoGridProps> = (props) => {
       </div>
     );
     return photoGrid;
-  }, [photoItems, styles.daySection, styles.photo, togglePhotoCarousel]);
+  }, [
+    photoItems,
+    styles.daySection,
+    styles.photo,
+    styles.photoContainer,
+    togglePhotoCarousel,
+  ]);
 
   return (
     <div className={styles.root}>
       {renderPhotos()}
-      {showPhotoCarousel && (
-        <PhotoCarousel
-          src={photoCarouselSrc}
-          togglePhotoCarousel={togglePhotoCarousel}
-        />
-      )}
+
+      <PhotoCarousel
+        imageTarget={
+          photoCarouselTargetElement ? photoCarouselTargetElement : undefined
+        }
+        targetCoordinates={photoCarouselTargetMouseCoordinates}
+        togglePhotoCarousel={togglePhotoCarousel}
+        visible={showPhotoCarousel}
+      />
     </div>
   );
 };
