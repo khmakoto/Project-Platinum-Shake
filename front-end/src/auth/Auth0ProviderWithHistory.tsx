@@ -5,6 +5,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 export const Auth0ProviderWithHistory : React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const domain = process.env.REACT_APP_AUTH0_DOMAIN;
   const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+  const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ export const Auth0ProviderWithHistory : React.FC<React.PropsWithChildren<{}>> = 
       clientId={clientId!}
       redirectUri={window.location.origin}
       onRedirectCallback={onRedirectCallback}
+      audience={audience}
     >
       {children}
     </Auth0Provider>
