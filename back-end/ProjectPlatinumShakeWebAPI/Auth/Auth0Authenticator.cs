@@ -12,6 +12,7 @@
     using Microsoft.IdentityModel.Protocols;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
+    using ProjectPlatinumShakeWebAPI.Settings;
 
     /// <summary>
     /// Class meant to be used as a singleton for authenticating JWT tokens for Auth0.

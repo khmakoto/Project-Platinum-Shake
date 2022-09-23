@@ -1,8 +1,8 @@
-﻿namespace ProjectPlatinumShakeWebAPI.Auth.Auth0ManagementAPI
+﻿namespace ProjectPlatinumShakeWebAPI.Auth.Auth0Management
 {
     using Newtonsoft.Json;
 
-    public class Auth0TokenResponse
+    public class Auth0ManagementTokenResponse
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }

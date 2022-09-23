@@ -1,4 +1,4 @@
-﻿namespace ProjectPlatinumShakeWebAPI.Auth.Auth0ManagementAPI
+﻿namespace ProjectPlatinumShakeWebAPI.Auth.Auth0Management
 {
     using System;
     using System.Net.Http;
@@ -7,10 +7,9 @@
     using Azure;
     using Azure.Security.KeyVault.Secrets;
     using Newtonsoft.Json;
-    using ProjectPlatinumShakeWebAPI.Auth;
     using ProjectPlatinumShakeWebAPI.Settings;
 
-    public class Auth0ManagementAPIUtility
+    public class Auth0ManagementTokenUtility
     {
         private const string ACCESS_TOKEN_SECRET_EXPIRE_TAG_NAME = "ExpiresOn";
         private const int SECONDS_TO_REMOVE_FROM_ACCESS_TOKEN_EXPIRE_DATE = 300;
@@ -20,7 +19,7 @@
         private readonly SecretClient keyVaultSecretsClient;
         private readonly KeyVaultSettings keyVaultSettings;
 
-        public Auth0ManagementAPIUtility(
+        public Auth0ManagementTokenUtility(
             Auth0Settings auth0Settings,
             HttpClient httpClient,
             SecretClient keyVaultSecretsClient,
@@ -49,7 +48,7 @@
         {
             try
             {
-                var response = await keyVaultSecretsClient.GetSecretAsync(keyVaultSettings.Auth0ManagementAPIAccessTokenSecretName);
+                var response = await keyVaultSecretsClient.GetSecretAsync(keyVaultSettings.Auth0ManagementAccessTokenSecretName);
                 var secretObject = response.Value;
                 if (secretObject.Properties.Tags.TryGetValue(ACCESS_TOKEN_SECRET_EXPIRE_TAG_NAME, out var expirationDateString)
                     && DateTimeOffset.TryParse(expirationDateString, out var expirationDate)
@@ -65,9 +64,9 @@
             }
         }
 
-        private async Task<Auth0TokenResponse> GetAccessTokenByCallingAuth0()
+        private async Task<Auth0ManagementTokenResponse> GetAccessTokenByCallingAuth0()
         {
-            var request = new Auth0TokenRequest
+            var request = new Auth0ManagementTokenRequest
             {
                 ClientId = auth0Settings.Auth0M2MAppClientId,
                 ClientSecret = auth0Settings.Auth0M2MAppClientSecret,
@@ -86,14 +85,14 @@
             httpResponse.EnsureSuccessStatusCode();
 
             var httpResponseContentString = await httpResponse.Content.ReadAsStringAsync();
-            var accessTokenInfo = JsonConvert.DeserializeObject<Auth0TokenResponse>(httpResponseContentString);
+            var accessTokenInfo = JsonConvert.DeserializeObject<Auth0ManagementTokenResponse>(httpResponseContentString);
 
             return accessTokenInfo;
         }
 
-        private async Task SetAccessTokenInKeyVault(Auth0TokenResponse accessTokenInfo)
+        private async Task SetAccessTokenInKeyVault(Auth0ManagementTokenResponse accessTokenInfo)
         {
-            var secretToUpload = new KeyVaultSecret(keyVaultSettings.Auth0ManagementAPIAccessTokenSecretName, accessTokenInfo.AccessToken);
+            var secretToUpload = new KeyVaultSecret(keyVaultSettings.Auth0ManagementAccessTokenSecretName, accessTokenInfo.AccessToken);
             var expiresOn = DateTimeOffset.UtcNow.AddSeconds(accessTokenInfo.ExpiresIn - SECONDS_TO_REMOVE_FROM_ACCESS_TOKEN_EXPIRE_DATE);
             secretToUpload.Properties.Tags[ACCESS_TOKEN_SECRET_EXPIRE_TAG_NAME] = expiresOn.ToString();
             await keyVaultSecretsClient.SetSecretAsync(secretToUpload);

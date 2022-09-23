@@ -1,4 +1,4 @@
-﻿namespace ProjectPlatinumShakeWebAPI.Auth
+﻿namespace ProjectPlatinumShakeWebAPI.Settings
 {
     using System;
 
@@ -11,7 +11,7 @@
         public readonly string Auth0M2MAppClientId;
 
         public readonly string Auth0M2MAppClientSecret;
-        
+
         public Auth0Settings()
         {
             Auth0Domain = Environment.GetEnvironmentVariable("AUTH0_DOMAIN_URL");
