@@ -12,10 +12,12 @@ namespace ProjectPlatinumShakeWebAPI
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var auth0Authenticator = new Auth0Authenticator(Auth0Settings.Auth0Domain, Auth0Settings.Auth0Audience);
-            builder.Services.AddSingleton(auth0Authenticator);
+            var authSettings = new Auth0Settings();
+            var auth0Authenticator = new Auth0Authenticator(authSettings);
+            var auth0ManagementAPIUtility = new Auth0ManagementAPIUtility(authSettings, new HttpClient());
 
-            var auth0ManagementAPIUtility = new Auth0ManagementAPIUtility(new HttpClient());
+            builder.Services.AddSingleton(authSettings);
+            builder.Services.AddSingleton(auth0Authenticator);
             builder.Services.AddSingleton(auth0ManagementAPIUtility);
         }
     }

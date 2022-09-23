@@ -8,26 +8,30 @@
 
     public class Auth0ManagementAPIUtility
     {
-        private HttpClient httpClient;
+        private readonly Auth0Settings auth0Settings;
+        private readonly HttpClient httpClient;
 
-        public Auth0ManagementAPIUtility(HttpClient httpClient)
+        public Auth0ManagementAPIUtility(
+            Auth0Settings auth0Settings,
+            HttpClient httpClient)
         {
+            this.auth0Settings = auth0Settings;
             this.httpClient = httpClient;
         }
 
         public async Task<string> GetAccessToken()
         {
-
             var request = new Auth0TokenRequest
             {
-                ClientId = Auth0Settings.Auth0M2MAppClientId,
-                ClientSecret = Auth0Settings.Auth0M2MAppClientSecret,
-                Audience = $"https://{Auth0Settings.Auth0Domain}/api/v2/",
+                ClientId = auth0Settings.Auth0M2MAppClientId,
+                ClientSecret = auth0Settings.Auth0M2MAppClientSecret,
+                Audience = $"https://{auth0Settings.Auth0Domain}/api/v2/",
                 GrantType = "client_credentials"
             };
+
             var jsonModel = JsonConvert.SerializeObject(request);
             var stringContent = new StringContent(jsonModel, Encoding.UTF8, "application/json");
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"https://{Auth0Settings.Auth0Domain}/oauth/token")
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"https://{auth0Settings.Auth0Domain}/oauth/token")
             {
                 Content = stringContent
             };

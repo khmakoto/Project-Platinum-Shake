@@ -4,12 +4,20 @@
 
     public class Auth0Settings
     {
-        public static readonly string Auth0Domain = Environment.GetEnvironmentVariable("AUTH0_DOMAIN_URL");
+        public readonly string Auth0Domain;
 
-        public static readonly string Auth0Audience = Environment.GetEnvironmentVariable("AUTH0_AUDIENCE");
+        public readonly string Auth0Audience;
 
-        public static readonly string Auth0M2MAppClientId = Environment.GetEnvironmentVariable("AUTH0_M2M_APP_CLIENT_ID");
+        public readonly string Auth0M2MAppClientId;
 
-        public static readonly string Auth0M2MAppClientSecret = Environment.GetEnvironmentVariable("AUTH0_M2M_APP_CLIENT_SECRET");
+        public readonly string Auth0M2MAppClientSecret;
+        
+        public Auth0Settings()
+        {
+            Auth0Domain = Environment.GetEnvironmentVariable("AUTH0_DOMAIN_URL");
+            Auth0Audience = Environment.GetEnvironmentVariable("AUTH0_AUDIENCE");
+            Auth0M2MAppClientId = Environment.GetEnvironmentVariable("AUTH0_M2M_APP_CLIENT_ID");
+            Auth0M2MAppClientSecret = Environment.GetEnvironmentVariable("AUTH0_M2M_APP_CLIENT_SECRET");
+        }
     }
 }
