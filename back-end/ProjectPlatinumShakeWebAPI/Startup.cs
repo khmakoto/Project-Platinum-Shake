@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using Auth0.ManagementApi;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -19,14 +20,16 @@ namespace ProjectPlatinumShakeWebAPI
             var keyVaultSecretsClient = new SecretClient(keyVaultSettings.KeyVaultUri, new DefaultAzureCredential());
             
             builder.Services.AddSingleton(keyVaultSecretsClient);
-            
+
+            var httpClient = new HttpClient();
             var authSettings = new Auth0Settings();
             var auth0Authenticator = new Auth0Authenticator(authSettings);
-            var auth0ManagementAPIUtility = new Auth0ManagementAPIUtility(authSettings, new HttpClient(), keyVaultSecretsClient, keyVaultSettings);
+            var auth0ManagementAPIUtility = new Auth0ManagementAPIUtility(authSettings, httpClient, keyVaultSecretsClient, keyVaultSettings);
             
             builder.Services.AddSingleton(authSettings);
             builder.Services.AddSingleton(auth0Authenticator);
             builder.Services.AddSingleton(auth0ManagementAPIUtility);
+            builder.Services.AddSingleton<IManagementConnection>(new HttpClientManagementConnection(httpClient));
         }
     }
 }

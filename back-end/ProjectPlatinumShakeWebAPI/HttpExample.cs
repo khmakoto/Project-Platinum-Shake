@@ -4,38 +4,51 @@ namespace ProjectPlatinumShakeWebAPI
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Auth0.ManagementApi;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using ProjectPlatinumShakeWebAPI.Auth;
+    using ProjectPlatinumShakeWebAPI.Auth.Auth0ManagementAPI;
     using ProjectPlatinumShakeWebAPI.Common;
 
     // TODO: This class and its methods will be renamed and repurposed for providing the actual API method we expect.
     // The current content of this class is just for demo/test purposes.
     public class HttpExample
     {
-        private Auth0Authenticator authenticator;
+        private readonly Auth0Authenticator authenticator;
+        private readonly Auth0Settings auth0Settings;
+        private readonly Auth0ManagementAPIUtility auth0ManagementAPIUtility;
+        private readonly IManagementConnection auth0ManagementAPIConnection;
 
-        public HttpExample(Auth0Authenticator authenticator)
+        public HttpExample(
+            Auth0Authenticator authenticator,
+            Auth0Settings auth0Settings,
+            Auth0ManagementAPIUtility auth0ManagementAPIUtility,
+            IManagementConnection auth0ManagementAPIConnection)
         {
             this.authenticator = authenticator;
+            this.auth0Settings = auth0Settings;
+            this.auth0ManagementAPIUtility = auth0ManagementAPIUtility;
+            this.auth0ManagementAPIConnection = auth0ManagementAPIConnection;
         }
 
         [FunctionName("Auth")]
-        public async Task<HttpResponseMessage> Run(
+        public async Task<HttpResponseMessage> Manage(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth")] HttpRequestMessage req,
             ILogger log)
         {
             try
             {
-                var (user, token) = await authenticator.AuthenticateAsync(req);
+                var (userClaims, userToken) = await authenticator.AuthenticateAsync(req);
                 log.LogInformation("User authenticated");
+                var userId = userClaims.Claims.Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Select(c => c.Value).First();
+                
+                var managementAPIToken = await auth0ManagementAPIUtility.GetAccessToken();
+                var managementAPIClient = new ManagementApiClient(managementAPIToken, auth0Settings.Auth0Domain, auth0ManagementAPIConnection);
+                var user = await managementAPIClient.Users.GetAsync(userId);
 
-                foreach (var claim in user.Claims)
-                    log.LogInformation($"Claim `{claim.Type}` is `{claim.Value}`");
-
-                var result = user.Claims.Select(c => new { type = c.Type, value = c.Value }).ToList();
-                return req.CreateResponse(HttpStatusCode.OK, result);
+                return req.CreateResponse(HttpStatusCode.OK, user);
             }
             catch (ExpectedException e)
             {
