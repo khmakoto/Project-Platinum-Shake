@@ -12,6 +12,7 @@
     using Microsoft.IdentityModel.Protocols;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.IdentityModel.Tokens;
+    using ProjectPlatinumShakeWebAPI.Settings;
 
     /// <summary>
     /// Class meant to be used as a singleton for authenticating JWT tokens for Auth0.
@@ -43,9 +44,8 @@
         /// <summary>
         /// Creates a new authenticator. In most cases, you should only have one authenticator instance in your application.
         /// </summary>
-        /// <param name="auth0Domain">The domain of the Auth0 account, e.g., <c>"myauth0test.auth0.com"</c>.</param>
-        /// <param name="audience">A single valid audience for tokens.</param>
-        public Auth0Authenticator(string auth0Domain, string audience) : this(auth0Domain, new string[] {audience} ) { }
+        /// <param name="auth0Settings">The settings with which to configure the authenticator.</param>
+        public Auth0Authenticator(Auth0Settings auth0Settings) : this(auth0Settings.Auth0Domain, new string[] { auth0Settings.Auth0Audience }) { }
 
         /// <summary>
         /// Authenticates the user token. Returns a user principal containing claims from the token and a token that can be used to perform actions on behalf of the user.
